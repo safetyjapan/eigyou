@@ -18,10 +18,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; }
 
-  .header {
-    background: var(--ink); padding: 0 16px; display: flex; align-items: center;
-    justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100;
-  }
+  .header { background: var(--ink); padding: 0 16px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
   .header-title { font-family: 'DM Serif Display', serif; color: var(--white); font-size: 18px; letter-spacing: 2px; }
   .header-nav { display: flex; gap: 20px; }
   .header-nav a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 0; }
@@ -58,33 +55,15 @@
   .btn-add-co:active { background: var(--accent-light); }
 
   /* ソートバー */
-  .sort-bar {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;
-  }
+  .sort-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
   .sort-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-light); white-space: nowrap; }
-  .sort-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .sort-btns { display: flex; gap: 6px; }
   .btn-sort {
-    padding: 6px 14px; border: 1.5px solid var(--line); border-radius: 20px; background: transparent;
+    padding: 6px 16px; border: 1.5px solid var(--line); border-radius: 20px; background: transparent;
     font-family: 'Noto Sans JP', sans-serif; font-size: 12px; color: var(--ink-light); cursor: pointer;
     transition: all 0.15s; -webkit-tap-highlight-color: transparent; white-space: nowrap;
   }
-  .btn-sort:active, .btn-sort.active { background: var(--ink); border-color: var(--ink); color: var(--white); }
-
-  /* 並び替え保存バー */
-  .save-order-bar {
-    display: none; align-items: center; justify-content: space-between;
-    background: var(--ink); color: var(--white); padding: 12px 16px; border-radius: 4px;
-    margin-bottom: 12px; font-size: 13px;
-  }
-  .save-order-bar.show { display: flex; }
-  .btn-save-order {
-    padding: 8px 18px; background: var(--gold); color: var(--ink); border: none; border-radius: 4px;
-    font-family: 'Noto Sans JP', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
-  }
-  .btn-save-order:active { opacity: 0.8; }
-
-  /* 会社リスト */
-  .company-list { user-select: none; }
+  .btn-sort.active { background: var(--ink); border-color: var(--ink); color: var(--white); }
 
   /* 地区グループヘッダー */
   .area-group-label {
@@ -92,19 +71,14 @@
     color: var(--ink-light); padding: 14px 0 6px; display: flex; align-items: center; gap: 10px;
   }
   .area-group-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .area-group-label:first-child { padding-top: 0; }
 
+  /* 会社リスト */
   .company-item {
     display: flex; align-items: center; gap: 8px;
     padding: 11px 0; border-bottom: 1px solid var(--paper-dark);
-    transition: background 0.15s;
   }
   .company-item:last-child { border-bottom: none; }
-  .company-item.dragging { opacity: 0.4; }
-  .company-item.drag-over { background: var(--paper); border-radius: 4px; }
-
-  .drag-handle { color: var(--line); font-size: 18px; cursor: grab; padding: 4px 2px; flex-shrink: 0; touch-action: none; }
-  /* ソート時はドラッグ無効化 */
-  .drag-handle.disabled { opacity: 0.2; cursor: default; pointer-events: none; }
 
   .company-item-info { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; flex-wrap: wrap; }
 
@@ -140,22 +114,16 @@
     opacity: 0; pointer-events: none; transition: opacity 0.25s;
   }
   .modal-overlay.show { opacity: 1; pointer-events: auto; }
-
   .modal {
     background: var(--white); width: 100%; max-width: 480px; border-radius: 12px 12px 0 0;
     padding: 28px 20px 32px; box-shadow: var(--shadow-lg);
     transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34,1.2,0.64,1);
   }
   .modal-overlay.show .modal { transform: translateY(0); }
-
   .modal-handle { width: 40px; height: 4px; background: var(--line); border-radius: 2px; margin: 0 auto 20px; }
   .modal-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--ink); margin-bottom: 20px; }
-
   .modal-field { margin-bottom: 16px; }
-  .modal-field:last-of-type { margin-bottom: 0; }
-
   .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
-
   .btn-modal-cancel {
     padding: 14px; background: transparent; border: 1.5px solid var(--line); border-radius: 4px;
     font-family: 'Noto Sans JP', sans-serif; font-size: 14px; color: var(--ink-light); cursor: pointer;
@@ -203,7 +171,7 @@
 <div class="container">
   <div class="page-heading">
     <h1>会社・現場を管理する</h1>
-    <p>並び替え・編集・追加・削除ができます</p>
+    <p>追加・編集・削除ができます</p>
   </div>
 
   <div class="card">
@@ -240,22 +208,13 @@
 
   <div class="card">
     <h2>登録済み一覧</h2>
-
-    <!-- ソートバー -->
     <div class="sort-bar">
       <span class="sort-label">並び替え</span>
       <div class="sort-btns">
-        <button class="btn-sort" id="sort-manual" onclick="setSort('manual')">手動順</button>
-        <button class="btn-sort" id="sort-area" onclick="setSort('area')">地区ごと</button>
+        <button class="btn-sort active" id="sort-area" onclick="setSort('area')">地区ごと</button>
         <button class="btn-sort" id="sort-kana" onclick="setSort('kana')">五十音順</button>
       </div>
     </div>
-
-    <div class="save-order-bar" id="save-order-bar">
-      <span>順番が変更されました</span>
-      <button class="btn-save-order" onclick="saveOrder()">保存する</button>
-    </div>
-
     <div class="company-list" id="company-list">
       <div class="empty-list">読み込み中…</div>
     </div>
@@ -306,14 +265,11 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const AREA_ORDER = ['国分','隼人','霧島','溝辺','牧園','福山','横川'];
 
 let companyData = [];
-let currentSort = 'manual'; // 'manual' | 'area' | 'kana'
-let dragSrc = null;
+let currentSort = 'area';
 let editingId = null;
 
-// ========== 読み込み・描画 ==========
-
 async function loadCompanies() {
-  const { data, error } = await db.from('companies').select('*').order('sort_order').order('name');
+  const { data, error } = await db.from('companies').select('*').order('name');
   if (error || !data?.length) {
     document.getElementById('company-list').innerHTML = '<div class="empty-list">会社がまだ登録されていません</div>';
     companyData = [];
@@ -332,18 +288,13 @@ function getSortedData() {
       return (a.name || '').localeCompare(b.name || '', 'ja');
     });
   }
-  if (currentSort === 'kana') {
-    return [...companyData].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'));
-  }
-  return companyData; // manual
+  return [...companyData].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'));
 }
 
 function setSort(mode) {
   currentSort = mode;
   document.querySelectorAll('.btn-sort').forEach(b => b.classList.remove('active'));
   document.getElementById(`sort-${mode}`).classList.add('active');
-  // 手動順以外では保存バーを隠す
-  if (mode !== 'manual') document.getElementById('save-order-bar').classList.remove('show');
   renderList();
 }
 
@@ -356,116 +307,43 @@ function renderList() {
 
   list.innerHTML = '';
   const sorted = getSortedData();
-  const isDraggable = currentSort === 'manual';
 
   if (currentSort === 'area') {
-    // 地区グループ表示
     const groups = {};
+    const groupOrder = [];
     sorted.forEach(c => {
       const a = c.area || '（地区未設定）';
-      if (!groups[a]) groups[a] = [];
+      if (!groups[a]) { groups[a] = []; groupOrder.push(a); }
       groups[a].push(c);
     });
-    Object.entries(groups).forEach(([area, items]) => {
+    groupOrder.forEach(area => {
       const label = document.createElement('div');
       label.className = 'area-group-label';
       label.textContent = area;
       list.appendChild(label);
-      items.forEach((c, idx) => list.appendChild(makeItem(c, idx, false)));
+      groups[area].forEach(c => list.appendChild(makeItem(c)));
     });
   } else {
-    sorted.forEach((c, idx) => list.appendChild(makeItem(c, idx, isDraggable)));
+    sorted.forEach(c => list.appendChild(makeItem(c)));
   }
 }
 
-function makeItem(c, idx, draggable) {
+function makeItem(c) {
   const item = document.createElement('div');
   item.className = 'company-item';
-  item.dataset.id = c.id;
-  item.dataset.idx = idx;
-  item.draggable = draggable;
-
   item.innerHTML = `
-    <div class="drag-handle ${draggable ? '' : 'disabled'}" title="${draggable ? 'ドラッグで並び替え' : '手動順のみ並び替え可'}">⠿</div>
     <div class="company-item-info">
       ${c.area ? `<span class="badge badge-area">${escHtml(c.area)}</span>` : ''}
       <span class="badge badge-type ${c.type==='本社'?'honsha':''}">${escHtml(c.type)}</span>
       <span class="co-name">${escHtml(c.name)}</span>
     </div>
     <div class="item-actions">
-      <button class="btn-edit" onclick="openModal('${c.id}')" title="編集">✎</button>
-      <button class="btn-del" onclick="deleteCompany('${c.id}','${escHtml(c.name)}')" title="削除">×</button>
+      <button class="btn-edit" onclick="openModal('${c.id}')">✎</button>
+      <button class="btn-del" onclick="deleteCompany('${c.id}','${escHtml(c.name)}')">×</button>
     </div>
   `;
-
-  if (draggable) {
-    // PC ドラッグ
-    item.addEventListener('dragstart', e => {
-      dragSrc = item; item.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    item.addEventListener('dragend', () => {
-      item.classList.remove('dragging');
-      document.querySelectorAll('.company-item').forEach(el => el.classList.remove('drag-over'));
-    });
-    item.addEventListener('dragover', e => {
-      e.preventDefault();
-      if (dragSrc && dragSrc !== item) item.classList.add('drag-over');
-    });
-    item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
-    item.addEventListener('drop', e => {
-      e.preventDefault();
-      if (!dragSrc || dragSrc === item) return;
-      item.classList.remove('drag-over');
-      const from = parseInt(dragSrc.dataset.idx);
-      const to = parseInt(item.dataset.idx);
-      const [moved] = companyData.splice(from, 1);
-      companyData.splice(to, 0, moved);
-      document.getElementById('save-order-bar').classList.add('show');
-      renderList();
-    });
-
-    // スマホ タッチ
-    let touchItem = null;
-    item.addEventListener('touchstart', () => { touchItem = item; }, { passive: true });
-    item.addEventListener('touchmove', e => {
-      e.preventDefault();
-      const t = e.touches[0];
-      const els = document.elementsFromPoint(t.clientX, t.clientY);
-      const target = els.find(el => el.classList.contains('company-item') && el !== touchItem);
-      document.querySelectorAll('.company-item').forEach(el => el.classList.remove('drag-over'));
-      if (target) target.classList.add('drag-over');
-    }, { passive: false });
-    item.addEventListener('touchend', e => {
-      const t = e.changedTouches[0];
-      const els = document.elementsFromPoint(t.clientX, t.clientY);
-      const target = els.find(el => el.classList.contains('company-item') && el !== touchItem);
-      document.querySelectorAll('.company-item').forEach(el => el.classList.remove('drag-over'));
-      if (target && touchItem) {
-        const from = parseInt(touchItem.dataset.idx);
-        const to = parseInt(target.dataset.idx);
-        const [moved] = companyData.splice(from, 1);
-        companyData.splice(to, 0, moved);
-        document.getElementById('save-order-bar').classList.add('show');
-        renderList();
-      }
-    });
-  }
-
   return item;
 }
-
-// ========== 並び替え保存 ==========
-
-async function saveOrder() {
-  await Promise.all(companyData.map((c, i) =>
-    db.from('companies').update({ sort_order: i }).eq('id', c.id)
-  ));
-  document.getElementById('save-order-bar').classList.remove('show');
-  showToast('並び順を保存しました');
-}
-
-// ========== 追加 ==========
 
 async function addCompany() {
   const name = document.getElementById('new-name').value.trim();
@@ -473,14 +351,12 @@ async function addCompany() {
   const type = document.getElementById('new-type').value;
   if (!name) { showToast('会社名を入力してください','error'); return; }
   if (!area) { showToast('地区を選択してください','error'); return; }
-  const { error } = await db.from('companies').insert({ name, area, type, sort_order: companyData.length });
+  const { error } = await db.from('companies').insert({ name, area, type });
   if (error) { showToast('追加に失敗しました','error'); return; }
   document.getElementById('new-name').value = '';
   showToast(`「${name}」を追加しました`);
   loadCompanies();
 }
-
-// ========== 編集モーダル ==========
 
 function openModal(id) {
   const c = companyData.find(c => c.id === id);
@@ -522,8 +398,6 @@ async function saveEdit() {
   loadCompanies();
 }
 
-// ========== 削除 ==========
-
 async function deleteCompany(id, name) {
   if (!confirm(`「${name}」を削除しますか？`)) return;
   const { error } = await db.from('companies').delete().eq('id', id);
@@ -531,8 +405,6 @@ async function deleteCompany(id, name) {
   showToast(`「${name}」を削除しました`);
   loadCompanies();
 }
-
-// ========== ユーティリティ ==========
 
 function showToast(msg, type='success') {
   const t = document.getElementById('toast');
@@ -548,8 +420,6 @@ document.getElementById('new-name').addEventListener('keydown', e => { if (e.key
 document.getElementById('edit-name').addEventListener('keydown', e => { if (e.key==='Enter') saveEdit(); });
 document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
 
-// 初期ソートボタンをアクティブに
-setSort('manual');
 loadCompanies();
 </script>
 </body>
