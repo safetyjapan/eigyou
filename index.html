@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>営業日報 - 入力</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --ink-light: #4a4a6a;
+    --paper: #f5f3ee;
+    --paper-dark: #ede9e0;
+    --accent: #c84b31;
+    --accent-light: #e86a4f;
+    --gold: #c9a84c;
+    --line: #d4cfc4;
+    --white: #ffffff;
+    --shadow: 0 4px 24px rgba(26,26,46,0.10);
+    --shadow-lg: 0 12px 40px rgba(26,26,46,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ---- ログイン画面 ---- */
+  #login-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--ink);
+  }
+
+  .login-box {
+    background: var(--white);
+    padding: 48px 40px;
+    width: 360px;
+    border-radius: 2px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+
+  .login-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--ink);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .login-sub {
+    font-size: 11px;
+    color: var(--ink-light);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .login-box input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--line);
+    border-radius: 2px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--paper);
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .login-box input:focus { outline: none; border-color: var(--accent); }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: var(--white);
+    border: none;
+    border-radius: 2px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-primary:hover { background: var(--accent-light); }
+
+  .login-error {
+    color: var(--accent);
+    font-size: 12px;
+    margin-top: 12px;
+    display: none;
+  }
+
+  /* ---- メインアプリ ---- */
+  #app { display: none; }
+
+  .header {
+    background: var(--ink);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-title {
+    font-family: 'DM Serif Display', serif;
+    color: var(--white);
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+
+  .header-nav {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .header-nav a {
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .header-nav a:hover, .header-nav a.active { color: var(--white); }
+
+  .header-nav a.active {
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: 2px;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+
+  .page-heading {
+    margin-bottom: 40px;
+  }
+
+  .page-heading h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .page-heading p {
+    color: var(--ink-light);
+    font-size: 13px;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ---- フォーム ---- */
+  .card {
+    background: var(--white);
+    border-radius: 2px;
+    box-shadow: var(--shadow);
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+
+  .field-group {
+    margin-bottom: 24px;
+  }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 10px;
+  }
+
+  input[type="date"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--line);
+    border-radius: 2px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    transition: border-color 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input[type="date"]:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--white);
+  }
+
+  textarea {
+    min-height: 100px;
+    resize: vertical;
+    line-height: 1.7;
+  }
+
+  .select-wrapper {
+    position: relative;
+  }
+
+  .select-wrapper::after {
+    content: '▾';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-light);
+    pointer-events: none;
+    font-size: 12px;
+  }
+
+  /* ---- 訪問先ブロック ---- */
+  .visit-block {
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-radius: 2px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    animation: slideIn 0.25s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .visit-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .visit-block-number {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .btn-remove {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink-light);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    line-height: 1;
+  }
+
+  .btn-remove:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(200,75,49,0.06);
+  }
+
+  .btn-add {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1.5px dashed var(--line);
+    border-radius: 2px;
+    color: var(--ink-light);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    margin-bottom: 32px;
+  }
+
+  .btn-add:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(200,75,49,0.03);
+  }
+
+  .submit-area {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .btn-submit {
+    padding: 14px 40px;
+    background: var(--accent);
+    color: var(--white);
+    border: none;
+    border-radius: 2px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-submit:hover { background: var(--accent-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(200,75,49,0.3); }
+  .btn-submit:disabled { background: var(--line); cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* ---- トースト通知 ---- */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: var(--ink);
+    color: var(--white);
+    padding: 16px 24px;
+    border-radius: 2px;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 999;
+    border-left: 3px solid var(--gold);
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .toast.error { border-left-color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .header { padding: 0 16px; }
+    .container { padding: 24px 16px; }
+    .card { padding: 20px; }
+    .visit-block { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ログイン -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">営業日報</div>
+    <div class="login-sub">Sales Report System</div>
+    <input type="password" id="password-input" placeholder="パスワードを入力" autocomplete="current-password">
+    <button class="btn-primary" onclick="doLogin()">ログイン</button>
+    <div class="login-error" id="login-error">パスワードが違います</div>
+  </div>
+</div>
+
+<!-- アプリ本体 -->
+<div id="app">
+  <div class="header">
+    <div class="header-title">営業日報</div>
+    <nav class="header-nav">
+      <a href="index.html" class="active">日報入力</a>
+      <a href="list.html">一覧</a>
+      <a href="admin.html">会社管理</a>
+    </nav>
+  </div>
+
+  <div class="container">
+    <div class="page-heading">
+      <h1>日報を入力する</h1>
+      <p>訪問先を追加して、話した内容を記録してください</p>
+    </div>
+
+    <div class="card">
+      <div class="field-group">
+        <label>日付</label>
+        <input type="date" id="report-date">
+      </div>
+    </div>
+
+    <div id="visit-blocks"></div>
+
+    <button class="btn-add" onclick="addVisitBlock()">＋ 訪問先を追加</button>
+
+    <div class="submit-area">
+      <button class="btn-submit" id="submit-btn" onclick="submitReport()">送 信</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let companies = [];
+let visitCount = 0;
+
+// ---- ログイン ----
+function doLogin() {
+  const pw = document.getElementById('password-input').value;
+  if (pw === PASSWORDS.sales || pw === PASSWORDS.admin) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    sessionStorage.setItem('auth', 'sales');
+    init();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+document.getElementById('password-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+// セッション維持
+if (sessionStorage.getItem('auth')) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  init();
+}
+
+// ---- 初期化 ----
+async function init() {
+  // 今日の日付をセット
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('report-date').value = today;
+
+  // 会社一覧取得
+  const { data, error } = await db.from('companies').select('*').order('name');
+  if (error) { showToast('会社一覧の取得に失敗しました', 'error'); return; }
+  companies = data || [];
+
+  // 最初のブロックを追加
+  addVisitBlock();
+}
+
+// ---- 訪問先ブロック追加 ----
+function addVisitBlock() {
+  visitCount++;
+  const container = document.getElementById('visit-blocks');
+
+  const block = document.createElement('div');
+  block.className = 'visit-block';
+  block.id = `visit-${visitCount}`;
+
+  const options = companies.map(c =>
+    `<option value="${c.id}">[${c.type}] ${c.name}</option>`
+  ).join('');
+
+  block.innerHTML = `
+    <div class="visit-block-header">
+      <span class="visit-block-number">訪問先 #${visitCount}</span>
+      <button class="btn-remove" onclick="removeVisitBlock(${visitCount})" title="削除">×</button>
+    </div>
+    <div class="field-group">
+      <label>会社名 / 現場名</label>
+      <div class="select-wrapper">
+        <select id="company-${visitCount}">
+          <option value="">選択してください</option>
+          ${options}
+        </select>
+      </div>
+    </div>
+    <div class="field-group" style="margin-bottom:0">
+      <label>話した内容</label>
+      <textarea id="content-${visitCount}" placeholder="打ち合わせ内容、提案内容、次のアクションなど…"></textarea>
+    </div>
+  `;
+
+  container.appendChild(block);
+}
+
+// ---- 訪問先ブロック削除 ----
+function removeVisitBlock(num) {
+  const el = document.getElementById(`visit-${num}`);
+  if (el) {
+    el.style.animation = 'none';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-8px)';
+    el.style.transition = 'all 0.2s';
+    setTimeout(() => el.remove(), 200);
+  }
+}
+
+// ---- 送信 ----
+async function submitReport() {
+  const date = document.getElementById('report-date').value;
+  if (!date) { showToast('日付を選択してください', 'error'); return; }
+
+  // 全訪問ブロックを収集
+  const blocks = document.querySelectorAll('.visit-block');
+  const items = [];
+
+  for (const block of blocks) {
+    const id = block.id.split('-')[1];
+    const companyId = document.getElementById(`company-${id}`)?.value;
+    const content = document.getElementById(`content-${id}`)?.value?.trim();
+
+    if (!companyId) { showToast('会社名を選択してください', 'error'); return; }
+    if (!content) { showToast('話した内容を入力してください', 'error'); return; }
+
+    items.push({ company_id: companyId, content });
+  }
+
+  if (items.length === 0) { showToast('訪問先を1件以上追加してください', 'error'); return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = '送信中…';
+
+  // 日報レコード作成
+  const { data: report, error: rError } = await db
+    .from('reports')
+    .insert({ report_date: date })
+    .select()
+    .single();
+
+  if (rError) {
+    showToast('送信に失敗しました', 'error');
+    btn.disabled = false;
+    btn.textContent = '送 信';
+    return;
+  }
+
+  // 明細レコード作成
+  const reportItems = items.map(item => ({
+    report_id: report.id,
+    company_id: item.company_id,
+    content: item.content
+  }));
+
+  const { error: iError } = await db.from('report_items').insert(reportItems);
+
+  if (iError) {
+    showToast('送信に失敗しました', 'error');
+    btn.disabled = false;
+    btn.textContent = '送 信';
+    return;
+  }
+
+  showToast('日報を送信しました ✓');
+
+  // フォームリセット
+  setTimeout(() => {
+    document.getElementById('visit-blocks').innerHTML = '';
+    visitCount = 0;
+    addVisitBlock();
+    btn.disabled = false;
+    btn.textContent = '送 信';
+  }, 1500);
+}
+
+// ---- トースト表示 ----
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast${type === 'error' ? ' error' : ''} show`;
+  setTimeout(() => t.className = t.className.replace(' show', ''), 3000);
+}
+</script>
+</body>
+</html>

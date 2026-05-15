@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>営業日報 - 一覧</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --ink-light: #4a4a6a;
+    --paper: #f5f3ee;
+    --paper-dark: #ede9e0;
+    --accent: #c84b31;
+    --accent-light: #e86a4f;
+    --gold: #c9a84c;
+    --line: #d4cfc4;
+    --white: #ffffff;
+    --shadow: 0 4px 24px rgba(26,26,46,0.10);
+    --shadow-lg: 0 12px 40px rgba(26,26,46,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; }
+
+  #login-screen {
+    display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--ink);
+  }
+  .login-box {
+    background: var(--white); padding: 48px 40px; width: 360px; border-radius: 2px;
+    box-shadow: var(--shadow-lg); text-align: center;
+  }
+  .login-logo { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--ink); letter-spacing: 2px; margin-bottom: 4px; }
+  .login-sub {
+    font-size: 11px; color: var(--ink-light); letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 36px; padding-bottom: 24px; border-bottom: 1px solid var(--line);
+  }
+  .login-box input {
+    width: 100%; padding: 14px 16px; border: 1.5px solid var(--line); border-radius: 2px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 15px; color: var(--ink);
+    background: var(--paper); margin-bottom: 16px; transition: border-color 0.2s;
+  }
+  .login-box input:focus { outline: none; border-color: var(--accent); }
+  .btn-primary {
+    width: 100%; padding: 14px; background: var(--accent); color: var(--white);
+    border: none; border-radius: 2px; font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px; font-weight: 500; letter-spacing: 2px; cursor: pointer; transition: background 0.2s;
+  }
+  .btn-primary:hover { background: var(--accent-light); }
+  .login-error { color: var(--accent); font-size: 12px; margin-top: 12px; display: none; }
+
+  #app { display: none; }
+
+  .header {
+    background: var(--ink); padding: 0 40px; display: flex; align-items: center;
+    justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100;
+  }
+  .header-title { font-family: 'DM Serif Display', serif; color: var(--white); font-size: 20px; letter-spacing: 2px; }
+  .header-nav { display: flex; gap: 24px; align-items: center; }
+  .header-nav a {
+    color: rgba(255,255,255,0.55); text-decoration: none; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase; transition: color 0.2s;
+  }
+  .header-nav a:hover, .header-nav a.active { color: var(--white); }
+  .header-nav a.active { border-bottom: 1px solid var(--gold); padding-bottom: 2px; }
+  .header-nav.president-nav a { pointer-events: none; color: rgba(255,255,255,0.3); }
+  .header-nav.president-nav a.active { pointer-events: auto; color: var(--white); }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+
+  .page-heading { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .page-heading h1 { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--ink); }
+  .page-heading p { color: var(--ink-light); font-size: 13px; margin-top: 8px; }
+
+  /* ---- フィルターバー ---- */
+  .filter-bar {
+    background: var(--white); border-radius: 2px; box-shadow: var(--shadow);
+    padding: 20px 24px; margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;
+  }
+  .filter-group { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 160px; }
+  .filter-group label {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-light);
+  }
+  .filter-group select, .filter-group input {
+    padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 2px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 13px; color: var(--ink);
+    background: var(--paper); appearance: none; -webkit-appearance: none; transition: border-color 0.2s;
+  }
+  .filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--accent); background: var(--white); }
+  .select-wrapper { position: relative; }
+  .select-wrapper::after {
+    content: '▾'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--ink-light); pointer-events: none; font-size: 11px;
+  }
+  .btn-filter {
+    padding: 10px 20px; background: var(--ink); color: var(--white); border: none; border-radius: 2px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500;
+    letter-spacing: 2px; cursor: pointer; white-space: nowrap; transition: background 0.2s; height: 42px;
+  }
+  .btn-filter:hover { background: var(--accent); }
+  .btn-reset {
+    padding: 10px 16px; background: transparent; color: var(--ink-light); border: 1.5px solid var(--line);
+    border-radius: 2px; font-family: 'Noto Sans JP', sans-serif; font-size: 12px;
+    cursor: pointer; height: 42px; transition: all 0.2s; white-space: nowrap;
+  }
+  .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---- 件数表示 ---- */
+  .result-meta {
+    font-size: 12px; color: var(--ink-light); letter-spacing: 1px; margin-bottom: 16px; padding-left: 4px;
+  }
+  .result-meta strong { color: var(--accent); }
+
+  /* ---- 日報カード ---- */
+  .report-group { margin-bottom: 32px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .report-date-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--ink-light); margin-bottom: 12px; display: flex; align-items: center; gap: 12px;
+  }
+  .report-date-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+  .report-card {
+    background: var(--white); border-radius: 2px; box-shadow: var(--shadow);
+    overflow: hidden; margin-bottom: 8px;
+  }
+
+  .report-card-item {
+    padding: 20px 24px; border-bottom: 1px solid var(--paper-dark); display: grid;
+    grid-template-columns: auto 1fr; gap: 24px; align-items: start;
+  }
+  .report-card-item:last-child { border-bottom: none; }
+
+  .company-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 2px;
+    padding: 4px 12px; white-space: nowrap;
+  }
+  .company-type {
+    font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--white); background: var(--ink-light); padding: 2px 6px; border-radius: 1px;
+  }
+  .company-type.honsha { background: var(--accent); }
+  .company-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+
+  .report-content {
+    font-size: 14px; color: var(--ink); line-height: 1.8; white-space: pre-wrap;
+  }
+
+  /* ---- ローディング ---- */
+  .loading {
+    text-align: center; padding: 80px; color: var(--ink-light); font-size: 13px; letter-spacing: 2px;
+  }
+  .loading::after { content: ''; display: inline-block; width: 16px; height: 16px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-left: 12px; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty { text-align: center; padding: 80px; color: var(--ink-light); font-size: 14px; }
+
+  @media (max-width: 600px) {
+    .header { padding: 0 16px; }
+    .container { padding: 24px 16px; }
+    .filter-bar { padding: 16px; }
+    .report-card-item { grid-template-columns: 1fr; gap: 12px; }
+    .page-heading { flex-direction: column; align-items: flex-start; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">営業日報</div>
+    <div class="login-sub">Sales Report</div>
+    <input type="password" id="password-input" placeholder="パスワードを入力" autocomplete="current-password">
+    <button class="btn-primary" onclick="doLogin()">ログイン</button>
+    <div class="login-error" id="login-error">パスワードが違います</div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="header">
+    <div class="header-title">営業日報</div>
+    <nav class="header-nav" id="header-nav">
+      <a href="index.html">日報入力</a>
+      <a href="list.html" class="active">一覧</a>
+      <a href="admin.html">会社管理</a>
+    </nav>
+  </div>
+
+  <div class="container">
+    <div class="page-heading">
+      <div>
+        <h1>日報一覧</h1>
+        <p>会社名・日付で絞り込めます</p>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>会社名で絞り込む</label>
+        <div class="select-wrapper">
+          <select id="filter-company">
+            <option value="">すべての会社</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-group" style="max-width:150px;">
+        <label>開始日</label>
+        <input type="date" id="filter-date-from">
+      </div>
+      <div class="filter-group" style="max-width:150px;">
+        <label>終了日</label>
+        <input type="date" id="filter-date-to">
+      </div>
+      <button class="btn-filter" onclick="loadReports()">絞り込む</button>
+      <button class="btn-reset" onclick="resetFilter()">リセット</button>
+    </div>
+
+    <div class="result-meta" id="result-meta"></div>
+    <div id="reports-container"><div class="loading">読み込み中</div></div>
+  </div>
+</div>
+
+<script>
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let isPresident = false;
+
+function doLogin() {
+  const pw = document.getElementById('password-input').value;
+  if (pw === PASSWORDS.president) {
+    isPresident = true;
+    startApp();
+  } else if (pw === PASSWORDS.sales || pw === PASSWORDS.admin) {
+    startApp();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+document.getElementById('password-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+function startApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  const role = isPresident ? 'president' : 'sales';
+  sessionStorage.setItem('auth', role);
+  if (isPresident) {
+    document.getElementById('header-nav').classList.add('president-nav');
+  }
+  init();
+}
+
+if (sessionStorage.getItem('auth')) {
+  if (sessionStorage.getItem('auth') === 'president') isPresident = true;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  if (isPresident) document.getElementById('header-nav').classList.add('president-nav');
+  init();
+}
+
+async function init() {
+  const { data } = await db.from('companies').select('*').order('name');
+  const sel = document.getElementById('filter-company');
+  (data || []).forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = `[${c.type}] ${c.name}`;
+    sel.appendChild(opt);
+  });
+  loadReports();
+}
+
+async function loadReports() {
+  const container = document.getElementById('reports-container');
+  const meta = document.getElementById('result-meta');
+  container.innerHTML = '<div class="loading">読み込み中</div>';
+  meta.textContent = '';
+
+  const companyId = document.getElementById('filter-company').value;
+  const dateFrom = document.getElementById('filter-date-from').value;
+  const dateTo = document.getElementById('filter-date-to').value;
+
+  // report_itemsに対してフィルター
+  let query = db.from('report_items')
+    .select(`
+      id,
+      content,
+      companies ( id, name, type ),
+      reports ( id, report_date )
+    `)
+    .order('created_at', { ascending: false });
+
+  if (companyId) query = query.eq('company_id', companyId);
+
+  const { data, error } = await query;
+
+  if (error) {
+    container.innerHTML = '<div class="empty">データの取得に失敗しました</div>';
+    return;
+  }
+
+  let items = data || [];
+
+  // 日付フィルター（reports.report_dateで絞る）
+  if (dateFrom) items = items.filter(i => i.reports?.report_date >= dateFrom);
+  if (dateTo) items = items.filter(i => i.reports?.report_date <= dateTo);
+
+  // 日付でグループ化
+  const groups = {};
+  items.forEach(item => {
+    const d = item.reports?.report_date || '';
+    if (!groups[d]) groups[d] = [];
+    groups[d].push(item);
+  });
+
+  const dates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
+  if (dates.length === 0) {
+    container.innerHTML = '<div class="empty">日報が見つかりませんでした</div>';
+    meta.textContent = '';
+    return;
+  }
+
+  meta.innerHTML = `<strong>${items.length}</strong> 件の記録`;
+
+  container.innerHTML = '';
+  dates.forEach(date => {
+    const group = document.createElement('div');
+    group.className = 'report-group';
+
+    const dateObj = new Date(date + 'T00:00:00');
+    const dateStr = `${dateObj.getFullYear()}年${dateObj.getMonth()+1}月${dateObj.getDate()}日`;
+    const days = ['日','月','火','水','木','金','土'];
+    const dayStr = days[dateObj.getDay()];
+
+    group.innerHTML = `<div class="report-date-label">${dateStr}（${dayStr}）</div>`;
+
+    const card = document.createElement('div');
+    card.className = 'report-card';
+
+    groups[date].forEach(item => {
+      const c = item.companies;
+      const isHonsha = c?.type === '本社';
+      card.innerHTML += `
+        <div class="report-card-item">
+          <div class="company-badge">
+            <span class="company-type ${isHonsha ? 'honsha' : ''}">${c?.type || ''}</span>
+            <span class="company-name">${c?.name || ''}</span>
+          </div>
+          <div class="report-content">${escHtml(item.content)}</div>
+        </div>
+      `;
+    });
+
+    group.appendChild(card);
+    container.appendChild(group);
+  });
+}
+
+function resetFilter() {
+  document.getElementById('filter-company').value = '';
+  document.getElementById('filter-date-from').value = '';
+  document.getElementById('filter-date-to').value = '';
+  loadReports();
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
