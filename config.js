@@ -2,8 +2,8 @@
 // ここにSupabaseの情報を入力してください
 // Supabase > Settings > API からコピーできます
 // ============================================================
-const SUPABASE_URL = 'https://cvvtfkypiimlyokyexfs.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2dnRma3lwaWltbHlva3lleGZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MDU2MTksImV4cCI6MjA5NDM4MTYxOX0.jA4VvoBZQRu7c54sqZsuo6WTxT1Mdogd9DBOCbhv_BQ';
+const SUPABASE_URL='https://cvvtfkypiimlyokyexfs.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2dnRma3lwaWltbHlva3lleGZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MDU2MTksImV4cCI6MjA5NDM4MTYxOX0.jA4VvoBZQRu7c54sqZsuo6WTxT1Mdogd9DBOCbhv_BQ';
 
 // パスワード設定
 const PASSWORDS = {
