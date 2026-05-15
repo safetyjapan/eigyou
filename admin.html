@@ -24,85 +24,114 @@
   }
   .header-title { font-family: 'DM Serif Display', serif; color: var(--white); font-size: 18px; letter-spacing: 2px; }
   .header-nav { display: flex; gap: 20px; }
-  .header-nav a {
-    color: rgba(255,255,255,0.55); text-decoration: none; font-size: 11px;
-    letter-spacing: 2px; text-transform: uppercase; padding: 4px 0;
-  }
+  .header-nav a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 0; }
   .header-nav a.active { color: var(--white); border-bottom: 1px solid var(--gold); }
 
-  .container { max-width: 700px; margin: 0 auto; padding: 24px 16px; }
-  .page-heading { margin-bottom: 24px; }
+  .container { max-width: 700px; margin: 0 auto; padding: 24px 16px 48px; }
+  .page-heading { margin-bottom: 20px; }
   .page-heading h1 { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--ink); }
   .page-heading p { color: var(--ink-light); font-size: 12px; margin-top: 6px; }
 
   .card { background: var(--white); border-radius: 4px; box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px; }
-  .card h2 { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-light); margin-bottom: 16px; }
+  .card h2 { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-light); margin-bottom: 14px; }
 
-  .add-form { display: flex; flex-direction: column; gap: 12px; }
-  .field { display: flex; flex-direction: column; gap: 8px; }
-  label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-light); }
+  /* 追加フォーム */
+  .add-form { display: flex; flex-direction: column; gap: 10px; }
+  .add-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-light); display: block; margin-bottom: 6px; }
+
   input[type="text"], select {
-    padding: 14px 16px; border: 1.5px solid var(--line); border-radius: 4px;
+    width: 100%; padding: 13px 14px; border: 1.5px solid var(--line); border-radius: 4px;
     font-family: 'Noto Sans JP', sans-serif; font-size: 16px; color: var(--ink);
-    background: var(--paper); transition: border-color 0.2s; appearance: none; -webkit-appearance: none;
+    background: var(--paper); appearance: none; -webkit-appearance: none; transition: border-color 0.2s;
   }
   input[type="text"]:focus, select:focus { outline: none; border-color: var(--accent); background: var(--white); }
+
   .select-wrapper { position: relative; }
-  .select-wrapper::after { content: '▾'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-light); pointer-events: none; }
+  .select-wrapper::after { content: '▾'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--ink-light); pointer-events: none; }
 
   .btn-add-co {
-    padding: 14px; background: var(--accent); color: var(--white); border: none; border-radius: 4px;
+    padding: 13px; background: var(--accent); color: var(--white); border: none; border-radius: 4px;
     font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px;
-    cursor: pointer; transition: background 0.2s; -webkit-tap-highlight-color: transparent;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
   .btn-add-co:active { background: var(--accent-light); }
 
-  .company-list { margin-top: 0; }
+  /* 会社リスト */
+  .company-list { user-select: none; }
+
   .company-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 0; border-bottom: 1px solid var(--paper-dark);
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 0; border-bottom: 1px solid var(--paper-dark);
+    transition: background 0.15s; cursor: grab;
   }
   .company-item:last-child { border-bottom: none; }
-  .company-item-left { display: flex; align-items: center; gap: 10px; }
-  .type-badge {
-    font-size: 9px; font-weight: 700; letter-spacing: 1px; padding: 3px 8px;
-    border-radius: 2px; color: var(--white); background: var(--ink-light);
+  .company-item.dragging { opacity: 0.4; cursor: grabbing; }
+  .company-item.drag-over { background: var(--paper); border-radius: 4px; }
+
+  .drag-handle {
+    color: var(--line); font-size: 18px; cursor: grab; padding: 4px 2px; flex-shrink: 0;
+    touch-action: none;
   }
-  .type-badge.honsha { background: var(--accent); }
-  .co-name { font-size: 14px; color: var(--ink); }
+  .company-item.dragging .drag-handle { cursor: grabbing; }
+
+  .company-item-info { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+
+  .badge {
+    font-size: 9px; font-weight: 700; letter-spacing: 1px; padding: 2px 7px;
+    border-radius: 2px; color: var(--white); white-space: nowrap; flex-shrink: 0;
+  }
+  .badge-area { background: var(--ink-light); }
+  .badge-type { background: var(--ink); }
+  .badge-type.honsha { background: var(--accent); }
+
+  .co-name { font-size: 14px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
   .btn-del {
     background: none; border: 1px solid var(--line); color: var(--ink-light);
-    width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px;
-    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-    flex-shrink: 0; -webkit-tap-highlight-color: transparent;
+    width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
   }
-  .btn-del:active { border-color: var(--accent); color: var(--accent); background: rgba(200,75,49,0.06); }
+  .btn-del:active { border-color: var(--accent); color: var(--accent); }
 
-  .empty-list { padding: 32px; text-align: center; color: var(--ink-light); font-size: 13px; }
+  .save-order-bar {
+    display: none; align-items: center; justify-content: space-between;
+    background: var(--ink); color: var(--white); padding: 12px 16px; border-radius: 4px;
+    margin-bottom: 12px; font-size: 13px;
+  }
+  .save-order-bar.show { display: flex; }
+  .btn-save-order {
+    padding: 8px 18px; background: var(--gold); color: var(--ink); border: none; border-radius: 4px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-save-order:active { opacity: 0.8; }
+
+  .empty-list { padding: 28px; text-align: center; color: var(--ink-light); font-size: 13px; }
 
   .toast {
-    position: fixed; bottom: 24px; left: 16px; right: 16px;
-    background: var(--ink); color: var(--white); padding: 16px 20px; border-radius: 4px;
-    font-size: 13px; box-shadow: var(--shadow-lg); transform: translateY(80px); opacity: 0;
-    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; border-left: 3px solid var(--gold);
-    text-align: center;
+    position: fixed; bottom: 24px; left: 16px; right: 16px; background: var(--ink); color: var(--white);
+    padding: 16px 20px; border-radius: 4px; font-size: 13px; box-shadow: var(--shadow-lg);
+    transform: translateY(80px); opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999; border-left: 3px solid var(--gold); text-align: center;
   }
   .toast.show { transform: translateY(0); opacity: 1; }
   .toast.error { border-left-color: var(--accent); }
 
   @media (min-width: 640px) {
     .header { padding: 0 40px; height: 64px; }
-    .container { padding: 48px 24px; }
-    .card { padding: 32px; }
-    .add-form { flex-direction: row; align-items: flex-end; }
-    .field:first-child { flex: 1; }
-    .btn-add-co { white-space: nowrap; padding: 14px 24px; }
+    .container { padding: 40px 24px; }
+    .card { padding: 28px; }
+    .add-form { flex-direction: row; align-items: flex-end; flex-wrap: wrap; }
+    .add-row { flex: 1; min-width: 280px; }
+    .btn-add-co { white-space: nowrap; align-self: flex-end; }
     .toast { left: auto; right: 32px; width: 320px; text-align: left; bottom: 32px; }
   }
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="header-title">営業日報</div>
   <nav class="header-nav">
@@ -115,17 +144,29 @@
 <div class="container">
   <div class="page-heading">
     <h1>会社・現場を管理する</h1>
-    <p>プルダウンに表示される会社名・現場名を追加・削除できます</p>
+    <p>ドラッグで並び替え、追加・削除ができます</p>
   </div>
 
   <div class="card">
     <h2>新しく追加</h2>
     <div class="add-form">
-      <div class="field">
-        <label>会社名 / 現場名</label>
-        <input type="text" id="new-name" placeholder="例：○○建設、第三現場" maxlength="50">
+      <div class="add-row">
+        <div style="margin-bottom:10px">
+          <label>会社名 / 現場名</label>
+          <input type="text" id="new-name" placeholder="例：○○建設、第三現場" maxlength="50">
+        </div>
+        <div style="margin-bottom:10px">
+          <label>地区</label>
+          <div class="select-wrapper">
+            <select id="new-area">
+              <option value="">選択してください</option>
+              <option>国分</option><option>隼人</option><option>霧島</option>
+              <option>溝辺</option><option>牧園</option><option>福山</option><option>横川</option>
+            </select>
+          </div>
+        </div>
       </div>
-      <div class="field" style="min-width:110px">
+      <div style="margin-bottom:10px; min-width:110px">
         <label>種別</label>
         <div class="select-wrapper">
           <select id="new-type">
@@ -136,6 +177,11 @@
       </div>
       <button class="btn-add-co" onclick="addCompany()">追加</button>
     </div>
+  </div>
+
+  <div class="save-order-bar" id="save-order-bar">
+    <span>順番が変更されました</span>
+    <button class="btn-save-order" onclick="saveOrder()">保存する</button>
   </div>
 
   <div class="card">
@@ -152,30 +198,128 @@
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+let companyData = [];
+let dragSrc = null;
+let orderChanged = false;
+
 async function loadCompanies() {
-  const { data, error } = await db.from('companies').select('*').order('type').order('name');
+  const { data, error } = await db.from('companies').select('*').order('sort_order').order('name');
   const list = document.getElementById('company-list');
   if (error || !data?.length) {
     list.innerHTML = '<div class="empty-list">会社がまだ登録されていません</div>';
+    companyData = [];
     return;
   }
-  list.innerHTML = data.map(c => `
-    <div class="company-item" id="co-${c.id}">
-      <div class="company-item-left">
-        <span class="type-badge ${c.type === '本社' ? 'honsha' : ''}">${c.type}</span>
+  companyData = data;
+  renderList();
+}
+
+function renderList() {
+  const list = document.getElementById('company-list');
+  if (!companyData.length) {
+    list.innerHTML = '<div class="empty-list">会社がまだ登録されていません</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  companyData.forEach((c, idx) => {
+    const item = document.createElement('div');
+    item.className = 'company-item';
+    item.dataset.id = c.id;
+    item.dataset.idx = idx;
+    item.draggable = true;
+    item.innerHTML = `
+      <div class="drag-handle" title="ドラッグで並び替え">⠿</div>
+      <div class="company-item-info">
+        ${c.area ? `<span class="badge badge-area">${escHtml(c.area)}</span>` : ''}
+        <span class="badge badge-type ${c.type==='本社'?'honsha':''}">${escHtml(c.type)}</span>
         <span class="co-name">${escHtml(c.name)}</span>
       </div>
-      <button class="btn-del" onclick="deleteCompany('${c.id}', '${escHtml(c.name)}')" title="削除">×</button>
-    </div>
-  `).join('');
+      <button class="btn-del" onclick="deleteCompany('${c.id}','${escHtml(c.name)}')" title="削除">×</button>
+    `;
+
+    // ドラッグイベント（PC）
+    item.addEventListener('dragstart', e => {
+      dragSrc = item;
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      document.querySelectorAll('.company-item').forEach(el => el.classList.remove('drag-over'));
+    });
+    item.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (dragSrc && dragSrc !== item) item.classList.add('drag-over');
+    });
+    item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
+    item.addEventListener('drop', e => {
+      e.preventDefault();
+      if (!dragSrc || dragSrc === item) return;
+      item.classList.remove('drag-over');
+      const fromIdx = parseInt(dragSrc.dataset.idx);
+      const toIdx = parseInt(item.dataset.idx);
+      const [moved] = companyData.splice(fromIdx, 1);
+      companyData.splice(toIdx, 0, moved);
+      orderChanged = true;
+      document.getElementById('save-order-bar').classList.add('show');
+      renderList();
+    });
+
+    // タッチイベント（スマホ）
+    let touchStartY = 0;
+    let touchItem = null;
+    item.addEventListener('touchstart', e => {
+      touchStartY = e.touches[0].clientY;
+      touchItem = item;
+    }, { passive: true });
+    item.addEventListener('touchmove', e => {
+      e.preventDefault();
+      const y = e.touches[0].clientY;
+      const els = document.elementsFromPoint(e.touches[0].clientX, y);
+      const target = els.find(el => el.classList.contains('company-item') && el !== touchItem);
+      document.querySelectorAll('.company-item').forEach(el => el.classList.remove('drag-over'));
+      if (target) target.classList.add('drag-over');
+    }, { passive: false });
+    item.addEventListener('touchend', e => {
+      const y = e.changedTouches[0].clientY;
+      const els = document.elementsFromPoint(e.changedTouches[0].clientX, y);
+      const target = els.find(el => el.classList.contains('company-item') && el !== touchItem);
+      document.querySelectorAll('.company-item').forEach(el => el.classList.remove('drag-over'));
+      if (target && touchItem) {
+        const fromIdx = parseInt(touchItem.dataset.idx);
+        const toIdx = parseInt(target.dataset.idx);
+        const [moved] = companyData.splice(fromIdx, 1);
+        companyData.splice(toIdx, 0, moved);
+        orderChanged = true;
+        document.getElementById('save-order-bar').classList.add('show');
+        renderList();
+      }
+    });
+
+    list.appendChild(item);
+  });
+}
+
+async function saveOrder() {
+  const updates = companyData.map((c, i) =>
+    db.from('companies').update({ sort_order: i }).eq('id', c.id)
+  );
+  await Promise.all(updates);
+  orderChanged = false;
+  document.getElementById('save-order-bar').classList.remove('show');
+  showToast('並び順を保存しました');
 }
 
 async function addCompany() {
   const name = document.getElementById('new-name').value.trim();
+  const area = document.getElementById('new-area').value;
   const type = document.getElementById('new-type').value;
-  if (!name) { showToast('会社名を入力してください', 'error'); return; }
-  const { error } = await db.from('companies').insert({ name, type });
-  if (error) { showToast('追加に失敗しました', 'error'); return; }
+  if (!name) { showToast('会社名を入力してください','error'); return; }
+  if (!area) { showToast('地区を選択してください','error'); return; }
+  const sort_order = companyData.length;
+  const { error } = await db.from('companies').insert({ name, area, type, sort_order });
+  if (error) { showToast('追加に失敗しました','error'); return; }
   document.getElementById('new-name').value = '';
   showToast(`「${name}」を追加しました`);
   loadCompanies();
@@ -184,23 +328,22 @@ async function addCompany() {
 async function deleteCompany(id, name) {
   if (!confirm(`「${name}」を削除しますか？`)) return;
   const { error } = await db.from('companies').delete().eq('id', id);
-  if (error) { showToast('削除に失敗しました', 'error'); return; }
+  if (error) { showToast('削除に失敗しました','error'); return; }
   showToast(`「${name}」を削除しました`);
   loadCompanies();
 }
 
-function showToast(msg, type = 'success') {
+function showToast(msg, type='success') {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast${type === 'error' ? ' error' : ''} show`;
-  setTimeout(() => t.className = t.className.replace(' show', ''), 3000);
+  t.textContent = msg; t.className = `toast${type==='error'?' error':''} show`;
+  setTimeout(()=>t.className=t.className.replace(' show',''), 3000);
 }
 
 function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-document.getElementById('new-name').addEventListener('keydown', e => { if (e.key === 'Enter') addCompany(); });
+document.getElementById('new-name').addEventListener('keydown', e => { if (e.key==='Enter') addCompany(); });
 
 loadCompanies();
 </script>

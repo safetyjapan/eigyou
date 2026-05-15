@@ -10,244 +10,106 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #1a1a2e;
-    --ink-light: #4a4a6a;
-    --paper: #f5f3ee;
-    --paper-dark: #ede9e0;
-    --accent: #c84b31;
-    --accent-light: #e86a4f;
-    --gold: #c9a84c;
-    --line: #d4cfc4;
-    --white: #ffffff;
+    --ink: #1a1a2e; --ink-light: #4a4a6a; --paper: #f5f3ee; --paper-dark: #ede9e0;
+    --accent: #c84b31; --accent-light: #e86a4f; --gold: #c9a84c;
+    --line: #d4cfc4; --white: #ffffff;
     --shadow: 0 2px 12px rgba(26,26,46,0.08);
-    --shadow-lg: 0 8px 32px rgba(26,26,46,0.12);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Noto Sans JP', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; }
 
-  /* ヘッダー */
   .header {
-    background: var(--ink);
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    background: var(--ink); padding: 0 16px; display: flex; align-items: center;
+    justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100;
   }
   .header-title { font-family: 'DM Serif Display', serif; color: var(--white); font-size: 18px; letter-spacing: 2px; }
   .header-nav { display: flex; gap: 20px; }
-  .header-nav a {
-    color: rgba(255,255,255,0.55); text-decoration: none; font-size: 11px;
-    letter-spacing: 2px; text-transform: uppercase; padding: 4px 0;
-  }
+  .header-nav a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 0; }
   .header-nav a.active { color: var(--white); border-bottom: 1px solid var(--gold); }
 
-  /* フィルターバー */
+  /* フィルター */
   .filter-section {
-    background: var(--white);
-    border-bottom: 1px solid var(--line);
-    padding: 12px 16px;
-    position: sticky;
-    top: 56px;
-    z-index: 90;
+    background: var(--white); border-bottom: 1px solid var(--line);
+    padding: 12px 16px; position: sticky; top: 56px; z-index: 90;
   }
-
-  .filter-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 8px;
-  }
+  .filter-row { display: grid; gap: 8px; margin-bottom: 8px; }
+  .filter-row.cols2 { grid-template-columns: 1fr 1fr; }
+  .filter-row.cols3 { grid-template-columns: 1fr 1fr 1fr; }
   .filter-row:last-child { margin-bottom: 0; }
 
-  .filter-select {
-    flex: 1;
-    padding: 10px 12px;
-    border: 1.5px solid var(--line);
-    border-radius: 4px;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    background: var(--paper);
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a4a6a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 32px;
+  .filter-select, .filter-date {
+    width: 100%; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 4px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 14px; color: var(--ink);
+    background: var(--paper); appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234a4a6a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px;
   }
+  .filter-date { background-image: none; padding-right: 12px; }
 
-  .filter-date {
-    flex: 1;
-    padding: 10px 12px;
-    border: 1.5px solid var(--line);
-    border-radius: 4px;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    background: var(--paper);
-    appearance: none;
-    -webkit-appearance: none;
-  }
-
-  .filter-date-label {
-    font-size: 10px;
-    color: var(--ink-light);
-    white-space: nowrap;
-    font-weight: 700;
-    letter-spacing: 1px;
-  }
-
-  .filter-actions {
-    display: flex;
-    gap: 8px;
-  }
-
+  .filter-actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
   .btn-filter {
-    flex: 1;
-    padding: 10px;
-    background: var(--accent);
-    color: var(--white);
-    border: none;
-    border-radius: 4px;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
+    padding: 10px; background: var(--accent); color: var(--white); border: none; border-radius: 4px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 13px; font-weight: 700;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
   .btn-filter:active { background: var(--accent-light); }
-
   .btn-reset {
-    padding: 10px 16px;
-    background: transparent;
-    border: 1.5px solid var(--line);
-    border-radius: 4px;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 13px;
-    color: var(--ink-light);
-    cursor: pointer;
-    white-space: nowrap;
-    -webkit-tap-highlight-color: transparent;
+    padding: 10px 14px; background: transparent; border: 1.5px solid var(--line); border-radius: 4px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 13px; color: var(--ink-light); cursor: pointer;
+    white-space: nowrap; -webkit-tap-highlight-color: transparent;
   }
   .btn-reset:active { border-color: var(--accent); color: var(--accent); }
 
   /* コンテンツ */
   .container { padding: 16px 16px 32px; }
-
-  .result-meta {
-    font-size: 11px;
-    color: var(--ink-light);
-    margin-bottom: 12px;
-    padding-left: 2px;
-  }
+  .result-meta { font-size: 11px; color: var(--ink-light); margin-bottom: 12px; }
   .result-meta strong { color: var(--accent); }
 
-  /* 日付グループ */
-  .report-group { margin-bottom: 24px; animation: fadeIn 0.3s ease; }
+  .report-group { margin-bottom: 20px; animation: fadeIn 0.3s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
   .report-date-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: var(--ink-light);
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-transform: uppercase;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--ink-light);
+    margin-bottom: 8px; display: flex; align-items: center; gap: 10px; text-transform: uppercase;
   }
   .report-date-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 
-  /* 日報カード - スマホ最適化 */
-  .report-card {
-    background: var(--white);
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
-  }
+  .report-card { background: var(--white); border-radius: 8px; box-shadow: var(--shadow); overflow: hidden; }
 
-  .report-card-item {
-    padding: 16px;
-    border-bottom: 1px solid var(--paper-dark);
-  }
+  .report-card-item { padding: 14px 16px; border-bottom: 1px solid var(--paper-dark); }
   .report-card-item:last-child { border-bottom: none; }
 
-  .company-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 10px;
-  }
+  .item-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
 
-  .company-type {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--white);
-    background: var(--ink-light);
-    padding: 2px 7px;
-    border-radius: 2px;
+  .badge {
+    font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--white); padding: 2px 7px; border-radius: 2px;
   }
-  .company-type.honsha { background: var(--accent); }
+  .badge-area { background: var(--ink-light); }
+  .badge-type { background: var(--ink); }
+  .badge-type.honsha { background: var(--accent); }
+  .badge-type.shinki { background: var(--gold); }
 
-  .company-name {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--ink);
-  }
+  .company-name { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .report-content { font-size: 14px; color: var(--ink); line-height: 1.8; white-space: pre-wrap; }
 
-  .report-content {
-    font-size: 14px;
-    color: var(--ink);
-    line-height: 1.8;
-    white-space: pre-wrap;
-    padding-left: 2px;
-  }
-
-  /* ローディング・空状態 */
-  .loading {
-    text-align: center;
-    padding: 60px 0;
-    color: var(--ink-light);
-    font-size: 13px;
-  }
-  .loading-spinner {
-    width: 24px; height: 24px;
-    border: 2px solid var(--line);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 12px;
-  }
+  .loading { text-align: center; padding: 60px 0; color: var(--ink-light); font-size: 13px; }
+  .spinner { width: 24px; height: 24px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .empty { text-align: center; padding: 60px 0; color: var(--ink-light); font-size: 14px; }
 
-  .empty {
-    text-align: center;
-    padding: 60px 0;
-    color: var(--ink-light);
-    font-size: 14px;
-  }
-
-  /* PC向け */
   @media (min-width: 640px) {
     .header { padding: 0 40px; height: 64px; }
     .filter-section { top: 64px; padding: 16px 40px; }
-    .filter-row { flex-wrap: nowrap; }
+    .filter-row.cols2 { grid-template-columns: repeat(4, 1fr); }
+    .filter-row.cols3 { grid-template-columns: auto auto 1fr 1fr; }
     .container { max-width: 960px; margin: 0 auto; padding: 24px 40px; }
-    .report-card-item { padding: 20px 24px; display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; }
-    .company-badge { margin-bottom: 0; }
+    .report-card-item { padding: 16px 24px; display: grid; grid-template-columns: 200px 1fr; gap: 16px; align-items: start; }
+    .item-meta { flex-direction: column; align-items: flex-start; margin-bottom: 0; }
   }
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="header-title">営業日報</div>
   <nav class="header-nav">
@@ -258,16 +120,23 @@
 </div>
 
 <div class="filter-section">
-  <div class="filter-row">
+  <div class="filter-row cols2">
+    <select class="filter-select" id="filter-area">
+      <option value="">すべての地区</option>
+      <option>国分</option><option>隼人</option><option>霧島</option>
+      <option>溝辺</option><option>牧園</option><option>福山</option><option>横川</option>
+    </select>
+    <select class="filter-select" id="filter-type">
+      <option value="">すべての種別</option>
+      <option>本社</option><option>現場</option><option>新規</option>
+    </select>
+  </div>
+  <div class="filter-row cols3">
     <select class="filter-select" id="filter-company">
       <option value="">すべての会社</option>
     </select>
-  </div>
-  <div class="filter-row">
-    <span class="filter-date-label">FROM</span>
-    <input type="date" class="filter-date" id="filter-date-from">
-    <span class="filter-date-label">TO</span>
-    <input type="date" class="filter-date" id="filter-date-to">
+    <input type="date" class="filter-date" id="filter-date-from" placeholder="開始日">
+    <input type="date" class="filter-date" id="filter-date-to" placeholder="終了日">
   </div>
   <div class="filter-actions">
     <button class="btn-filter" onclick="loadReports()">絞り込む</button>
@@ -277,12 +146,7 @@
 
 <div class="container">
   <div class="result-meta" id="result-meta"></div>
-  <div id="reports-container">
-    <div class="loading">
-      <div class="loading-spinner"></div>
-      読み込み中
-    </div>
-  </div>
+  <div id="reports-container"><div class="loading"><div class="spinner"></div>読み込み中</div></div>
 </div>
 
 <script>
@@ -290,13 +154,12 @@ const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function init() {
-  const { data } = await db.from('companies').select('*').order('name');
+  const { data } = await db.from('companies').select('*').order('sort_order').order('name');
   const sel = document.getElementById('filter-company');
-  (data || []).forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.id;
-    opt.textContent = `[${c.type}] ${c.name}`;
-    sel.appendChild(opt);
+  (data||[]).forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.id; o.textContent = `[${c.area||''}] ${c.name}`;
+    sel.appendChild(o);
   });
   loadReports();
 }
@@ -304,25 +167,25 @@ async function init() {
 async function loadReports() {
   const container = document.getElementById('reports-container');
   const meta = document.getElementById('result-meta');
-  container.innerHTML = '<div class="loading"><div class="loading-spinner"></div>読み込み中</div>';
+  container.innerHTML = '<div class="loading"><div class="spinner"></div>読み込み中</div>';
   meta.textContent = '';
 
+  const area = document.getElementById('filter-area').value;
+  const type = document.getElementById('filter-type').value;
   const companyId = document.getElementById('filter-company').value;
   const dateFrom = document.getElementById('filter-date-from').value;
   const dateTo = document.getElementById('filter-date-to').value;
 
   let query = db.from('report_items')
-    .select(`id, content, companies ( id, name, type ), reports ( id, report_date )`)
+    .select(`id, content, area, type, company_name_free, companies(id,name,type,area), reports(id,report_date)`)
     .order('created_at', { ascending: false });
 
   if (companyId) query = query.eq('company_id', companyId);
+  if (area) query = query.eq('area', area);
+  if (type) query = query.eq('type', type);
 
   const { data, error } = await query;
-
-  if (error) {
-    container.innerHTML = '<div class="empty">データの取得に失敗しました</div>';
-    return;
-  }
+  if (error) { container.innerHTML = '<div class="empty">データの取得に失敗しました</div>'; return; }
 
   let items = data || [];
   if (dateFrom) items = items.filter(i => i.reports?.report_date >= dateFrom);
@@ -335,39 +198,36 @@ async function loadReports() {
     groups[d].push(item);
   });
 
-  const dates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
-
-  if (dates.length === 0) {
-    container.innerHTML = '<div class="empty">日報が見つかりませんでした</div>';
-    return;
-  }
+  const dates = Object.keys(groups).sort((a,b) => b.localeCompare(a));
+  if (!dates.length) { container.innerHTML = '<div class="empty">日報が見つかりませんでした</div>'; return; }
 
   meta.innerHTML = `<strong>${items.length}</strong> 件の記録`;
   container.innerHTML = '';
 
-  const days = ['日','月','火','水','木','金','土'];
-
+  const DAY = ['日','月','火','水','木','金','土'];
   dates.forEach(date => {
     const group = document.createElement('div');
     group.className = 'report-group';
-
-    const dateObj = new Date(date + 'T00:00:00');
-    const dateStr = `${dateObj.getMonth()+1}月${dateObj.getDate()}日（${days[dateObj.getDay()]}）`;
-
-    group.innerHTML = `<div class="report-date-label">${dateStr}</div>`;
+    const d = new Date(date + 'T00:00:00');
+    group.innerHTML = `<div class="report-date-label">${d.getMonth()+1}月${d.getDate()}日（${DAY[d.getDay()]}）</div>`;
 
     const card = document.createElement('div');
     card.className = 'report-card';
 
     groups[date].forEach(item => {
       const c = item.companies;
-      const isHonsha = c?.type === '本社';
+      const itemType = item.type || c?.type || '';
+      const itemArea = item.area || c?.area || '';
+      const name = item.type === '新規' ? (item.company_name_free || '') : (c?.name || '');
+      const typeClass = itemType === '本社' ? 'honsha' : itemType === '新規' ? 'shinki' : '';
+
       const div = document.createElement('div');
       div.className = 'report-card-item';
       div.innerHTML = `
-        <div class="company-badge">
-          <span class="company-type ${isHonsha ? 'honsha' : ''}">${c?.type || ''}</span>
-          <span class="company-name">${escHtml(c?.name || '')}</span>
+        <div class="item-meta">
+          ${itemArea ? `<span class="badge badge-area">${escHtml(itemArea)}</span>` : ''}
+          <span class="badge badge-type ${typeClass}">${escHtml(itemType)}</span>
+          <span class="company-name">${escHtml(name)}</span>
         </div>
         <div class="report-content">${escHtml(item.content)}</div>
       `;
@@ -380,9 +240,9 @@ async function loadReports() {
 }
 
 function resetFilter() {
-  document.getElementById('filter-company').value = '';
-  document.getElementById('filter-date-from').value = '';
-  document.getElementById('filter-date-to').value = '';
+  ['filter-area','filter-type','filter-company','filter-date-from','filter-date-to'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
   loadReports();
 }
 
